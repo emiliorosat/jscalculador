@@ -1,13 +1,10 @@
 import React, { useState } from "react";
 import "./App.css";
 
-function verify(dato, key) {
-  console.log(dato.length, key);
-}
-
 function App() {
   const [input, setInput] = useState("");
   const [output, setOutput] = useState(0);
+  const [exe, setExe] = useState(false);
 
   function Operacion(str) {
     if (typeof str === "string" && str !== "") {
@@ -35,21 +32,33 @@ function App() {
       case "7":
       case "8":
       case "9":
-        Insert(key);
+        if (input === "" && output !== 0) {
+          setInput(key);
+          setOutput(key);
+        } else if (output === 0) {
+          setOutput(key);
+          setInput(input + key);
+        } else {
+          Insert(key);
+        }
         break;
       case "0":
-        {
-          verify(input, key);
+        if (output === 0) {
+          return;
+        } else {
           Insert(key);
         }
         break;
       case ".":
         {
-          if (input.length === 0) {
-            Insert("0.");
-          } else {
-            verify(input, key);
+          const rex = /[.]/;
+          if (output === 0) {
+            setOutput(output + ".");
+            setInput(input + "0.");
+          } else if (!rex.test(output)) {
             Insert(key);
+          } else {
+            return;
           }
         }
         break;
@@ -57,45 +66,49 @@ function App() {
       case "-":
       case "/":
       case "*":
-        {
-          //console.log(input.charAt(input -1))
-          const rex = /-/;
-          if (!rex.test(output) && input.charAt(input - 1) !== "-") {
-            Insert(key);
-          } else {
-            setOutput(0);
-            //Insert(key);
-
-            //verify(input, key)
-          }
+        console.log(output.charAt(output.length - 1))
+        setOutput(key);
+        setInput(input + key);
+        //console.log(input.charAt(input -1))
+        const rex = /-/;
+        if (!rex.test(output) && input.charAt(input - 1) !== "-") {
+          Insert(key);
+        } else {
+          //setOutput(0);
+          //Insert(key);
+          //verify(input, key)
         }
+
         break;
       case "Escape":
         Clear();
         break;
+      /*
       case "=":
       case "Enter":
         Execute();
         break;
+        */
       default:
-        console.log(key);
-        break;
+        return;
     }
   }
 
   function Insert(key) {
     setInput(input + key);
-    setOutput(input + key);
+    setOutput(output + key);
   }
 
   function Clear() {
     setOutput(0);
     setInput("");
+    setExe(false);
   }
 
   function Execute() {
     let done = Operacion(input);
     if (done !== "" && done !== undefined) {
+      setInput("");
       setOutput(done);
     }
   }
@@ -104,9 +117,11 @@ function App() {
     <main className="App">
       <div className="App-header">
         <div className="">
-          <div id="display">
-            <div className="dp op">{input}</div>
-            <div className="dp">{output}</div>
+          <div className="display">
+            <span className="dp op">{input}</span>
+            <span className="dp" id="display">
+              {output}
+            </span>
           </div>
           <div className="keyboard">
             <div onClick={Execute} dangerouslySetInnerHTML={{ __html: "=" }} id="equals" title="=" />
