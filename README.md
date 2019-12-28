@@ -1,1 +1,1 @@
-hosted: https://jscalculador.firebaseapp.com/
+hosted: https://jscalculador.web.app/
