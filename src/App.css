@@ -112,3 +112,9 @@ grid-area: sub;
 #zero {
   grid-area: zero;
 }
+
+.me {
+  text-decoration: none;
+  color: #ccc;
+  margin-top: 2rem;
+}

@@ -4,14 +4,21 @@ import "./App.css";
 function App() {
   const [input, setInput] = useState("");
   const [output, setOutput] = useState(0);
-  const [exe, setExe] = useState(false);
 
   function Operacion(str) {
     if (typeof str === "string" && str !== "") {
-      return eval(str);
+      //let result = eval(str); //operacion utilizando la funcion global eval
+      //let fn = new Function('return '+str) //operacion utilizando el constructor de objeto
+      //let result = fn()
+      const constr = "constructor"; //utilizando constructor
+      let result = constr[constr][constr]("return " + str)();
+      if (typeof result !== "number") {
+        return;
+      }
+      return result;
     }
   }
-
+  //agregando escuchador de eventos de teclado
   document.addEventListener("keyup", function(e) {
     keySelect(e.key);
   });
@@ -22,6 +29,7 @@ function App() {
   }
 
   function keySelect(key) {
+    let lk = input.charAt(input.length - 1);
     switch (key) {
       case "1":
       case "2":
@@ -32,7 +40,11 @@ function App() {
       case "7":
       case "8":
       case "9":
-        if (input === "" && output !== 0) {
+        // let lk = output.charAt(output.length -1)
+        if (lk === "+" || lk === "/" || lk === "*") {
+          setOutput(key);
+          setInput(input + key);
+        } else if (input === "" && output !== 0) {
           setInput(key);
           setOutput(key);
         } else if (output === 0) {
@@ -45,6 +57,8 @@ function App() {
       case "0":
         if (output === 0) {
           return;
+        } else if (input === "" && output !== 0) {
+          setOutput(key);
         } else {
           Insert(key);
         }
@@ -66,18 +80,32 @@ function App() {
       case "-":
       case "/":
       case "*":
-        console.log(output.charAt(output.length - 1))
-        setOutput(key);
-        setInput(input + key);
-        //console.log(input.charAt(input -1))
-        const rex = /-/;
-        if (!rex.test(output) && input.charAt(input - 1) !== "-") {
-          Insert(key);
+        let pk = input.charAt(input.length - 2);
+        if (input === "" && output !== 0) {
+          setInput(output + key);
+        }else if(input === '' && output === 0){
+            setInput('0'+key)
+        } else if (lk === "+" || lk === "/" || lk === "*") {
+          if (key === "-") {
+            setInput(input + key);
+          } else {
+            let str = input.slice(0, input.length - 1);
+            setInput(str + key);
+          }
+        } else if (pk === "+" || pk === "/" || pk === "*") {
+          if (lk === "-") {
+            let str = input.slice(0, input.length - 2);
+            setInput(str + key);
+          } else {
+            setInput(input + key);
+          }
+        } else if (lk === "-") {
+          let str = input.slice(0, input.length - 1);
+          setInput(str + key);
         } else {
-          //setOutput(0);
-          //Insert(key);
-          //verify(input, key)
+          setInput(input + key);
         }
+        setOutput(key);
 
         break;
       case "Escape":
@@ -102,14 +130,23 @@ function App() {
   function Clear() {
     setOutput(0);
     setInput("");
-    setExe(false);
   }
 
   function Execute() {
-    let done = Operacion(input);
-    if (done !== "" && done !== undefined) {
-      setInput("");
-      setOutput(done);
+    if (input !== "" && input !== undefined) {
+      //valida si el dato en input es valido
+      let lk = input.charAt(input.length - 1);
+      if (lk === "+" || lk === "-" || lk === "*" || lk === "/") {
+        //comprueba que no termine en un signo matematico
+        let str = input.slice(0, input.length - 1);
+        let done = Operacion(str);
+        setInput("");
+        setOutput(done);
+      } else {
+        let done = Operacion(input);
+        setInput("");
+        setOutput(done);
+      }
     }
   }
 
@@ -143,6 +180,7 @@ function App() {
             <div onClick={Clear} dangerouslySetInnerHTML={{ __html: "AC" }} id="clear" title="Escape" />
           </div>
         </div>
+        <a href="https://emiliort.com" target="_blank"  rel="noopener noreferrer" className="me">By EmilioRT</a>
       </div>
     </main>
   );
