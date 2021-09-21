@@ -3,7 +3,7 @@
 
 Este proyecto consiste en una calculadora simple, la misma esta contruida con ReactJS y Hosteada en Firebase.
 
-# Conocimiento utilizado:
+## Conocimiento utilizado:
 
 - HTML
 - CSS
